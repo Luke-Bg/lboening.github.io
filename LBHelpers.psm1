@@ -129,7 +129,8 @@ Catch [Exception]{
 .NOTES
    ## Installation using PSGet
    ## Install PSGet: (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1") | iex
-   Install-module http://lboening.github.io/LBHelpers.psm1 -force
+   Install-module -ModuleURL http://lboening.github.io/LBHelpers.psm1 -force
+   get-command -listimported | ? {$_.ModuleName -like 'LB*'}
 .ROLE
    Test
 .LINKS
