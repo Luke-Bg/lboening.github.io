@@ -1,9 +1,12 @@
-﻿Function Add-TypeSysWebExt {
-    Add-Type -AssemblyName System.Web.Extension
-}
+﻿Function Add-TypeSysWebExt { Add-Type -AssemblyName System.Web.Extension}
 
 Function Add-ConsoleApp{
-
+[cmdletbinding()]
+param(
+[Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,Position=0)]
+[string]$assembly
+)
+process{
 $assembly = @"
 using System;
 
@@ -14,42 +17,21 @@ public class MyProgram
     }
 }
 "@
-
 Add-Type -OutputType ConsoleApplication -OutputAssembly HelloWorld.exe $assembly
-
+}
 }
 
 Function Get-Links {
-    $wc = New-object System.Net.Webclient
-    $url = "https://gsa.github.io/data/dotgov-domains/2014-12-01-full.csv"
-    $resp = $wc.DownloadString($url)
-    return $resp
-}
-
-Function Get-WebHeaders{
 [cmdletbinding()]
-[Outputtype([psobject])]
 param(
-[parameter(Mandatory=$true,ValueFromPipeLine=$true)]
-[ValidatePattern('http*')]
-[string]$uri,
-[parameter(Mandatory=$false,ValueFromPipeLine=$true)]
-[string]$keytorec='Url'
+[Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,Position=0)]
+[string]$url="https://gsa.github.io/data/dotgov-domains/2014-12-01-full.csv"
 )
-Process {
-   try {
-    $resp = Invoke-WebRequest -uri $uri -method head -UseBasicParsing -DisableKeepAlive -TimeoutSec 4 -UserAgent "Powershell 4.0" -MaximumRedirection 2 
-    $prop = @{'KeyToRec'=$keytorec;'Uri'=$uri; 'Headers'=$resp.headers; 'StatusCode'=$resp.StatusCode; 'Error'=$false; 'DateTimeUTC'= (Get-date -format O);}
-    New-Object -TypeName PSObject -Property $prop
-} Catch [System.Net.WebException] 
-{
-   $prop = @{'KeyToRec'=$keytorec;'Error'= $true; 'Uri'=$uri; ErrorDetail=$_.Exception.Message; 'DateTimeUTC'= (Get-date -format O);}
-   New-Object -TypeName PsObject -property $prop
+process{
+ $wc = New-object System.Net.Webclient
+ $resp = $wc.DownloadString($url)
+ return $resp
 }
-Catch [Exception]{
-   $prop = @{'KeyToRec'=$keytorec;'Error'= $true; 'Uri'=$uri; ErrorDetail=$_.Exception.Message; 'DateTimeUTC'= (Get-date -format O);}
-   New-Object -TypeName PsObject -property $prop
-}  
 }
 <#
 .Synopsis
@@ -110,7 +92,28 @@ Catch [Exception]{
                 "Server" : "Apache/2.2.14 (Ubuntu)"
         }
 }
-   
+.EXAMPLE
+ ## Get headers
+ PS C:\Windows\system32> (Get-WebHeaders -uri http://lboening.github.io/ -keytorec GH ).headers
+ Key                                                         Value
+ ---                                                         -----
+ Access-Control-Allow-Origin                                 *
+ Age                                                         0
+ Connection                                                  close
+ X-Served-By                                                 cache-ord1732-ORD
+ X-Cache                                                     MISS
+ X-Cache-Hits                                                0
+ X-Timer                                                     S1425843444.469941,VS0,VE39
+ Vary                                                        Accept-Encoding
+ Accept-Ranges                                               bytes
+ Content-Length                                              2006
+ Cache-Control                                               max-age=600
+ Content-Type                                                text/html; charset=utf-8
+ Date                                                        Sun, 08 Mar 2015 19:37:24 GMT
+ Expires                                                     Sun, 08 Mar 2015 19:47:24 GMT
+ Last-Modified                                               Sun, 08 Mar 2015 19:34:15 GMT
+ Server                                                      GitHub.com
+ Via                                                         1.1 varnish
 .INPUTS
    [string] uri. Validated as HTTP.
    [string] keytorec (optional key added to output)
@@ -137,14 +140,33 @@ Catch [Exception]{
    HTTP://lboening.github.io/LBHelpers.psm1
    HTTP://lboening.github.io/LBHelpers.psd1
    http://psget.net/
-   
 .FUNCTIONALITY
    Makes getting a head request easier
 #>
+Function Get-WebHeaders{
+[cmdletbinding()]
+[Outputtype([psobject])]
+param(
+[parameter(Mandatory=$true,ValueFromPipeLine=$true)]
+[ValidatePattern('http*')]
+[string]$uri,
+[parameter(Mandatory=$false,ValueFromPipeLine=$true)]
+[string]$keytorec='Url'
+)
+Process {
+   try {
+    $resp = Invoke-WebRequest -uri $uri -method head -UseBasicParsing -DisableKeepAlive -TimeoutSec 4 -UserAgent "Powershell 4.0" -MaximumRedirection 2 
+    $prop = @{'KeyToRec'=$keytorec;'Uri'=$uri; 'Headers'=$resp.headers; 'StatusCode'=$resp.StatusCode; 'Error'=$false; 'DateTimeUTC'= (Get-date -format O);}
+    New-Object -TypeName PSObject -Property $prop
+    } Catch [System.Net.WebException]{
+      $prop = @{'KeyToRec'=$keytorec;'Error'= $true; 'Uri'=$uri; ErrorDetail=$_.Exception.Message; 'DateTimeUTC'= (Get-date -format O);}
+      New-Object -TypeName PsObject -property $prop
+    } Catch [Exception]{
+      $prop = @{'KeyToRec'=$keytorec;'Error'= $true; 'Uri'=$uri; ErrorDetail=$_.Exception.Message; 'DateTimeUTC'= (Get-date -format O);}
+      New-Object -TypeName PsObject -property $prop
+    }  
+    }
 }
 
-
-
-
-#New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.0.2" -path "C:\USERS\LUKE_2\Documents\WindowsPowershell\Modules\LBHelpers\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1" -confirm
+## New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.2.0" -path "C:\USERS\LUKE_2\Documents\WindowsPowershell\Modules\LBHelpers\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1" -confirm
 
