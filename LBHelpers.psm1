@@ -1,6 +1,4 @@
-﻿Function Add-TypeSysWebExt { Add-Type -AssemblyName System.Web.Extension}
-
-Function Add-ConsoleApp{
+﻿Function Add-ConsoleApp{
 [cmdletbinding()]
 param(
 [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,Position=0)]
@@ -33,6 +31,8 @@ process{
  return $resp
 }
 }
+
+
 <#
 .Synopsis
    Get-WebHeaders sends head request to URI and returns a Powershell custom object
@@ -48,72 +48,6 @@ process{
    Get-Webheaders -uri 'http://ABINGDON-VA.GOV/'
 .EXAMPLE
    Get-WebHeaders -uri 'http://ABINGDON-VA.GOV/' -KeyToRec 'Abingdon-va' | FL
-.EXAMPLE
-  ## Longer example intended for piping JSON file output to MongoDB
-
-  $getlinks = Get-Links | convertfrom-csv
-
-   Write-Host "Count of returned rows: "$out.Length
-
-  remove-item C:\alldata\Getwc.json -ErrorAction SilentlyContinue
-  $count = 0
-  $countstart = read-host(('Enter start count between 0 and '+$out.length))
-  $countend = read-host(('Enter end count greater than '+$countstart+' and less than '+$out.length))
-  $counttotal = $countend - $countstart
-  foreach ($link in $getlinks[$countstart..$countend]) {
-      Write-Progress -Activity 'Processing' -Status ('{0} {1} of {2}'-f ('Testing link', $count, $counttotal)) -CurrentOperation $link.'Domain Name' -PercentComplete ( $count/$counttotal*100)
-      Get-WebHeaders -uri ('http://'+$link.'Domain Name'+'/') -keytorec ('LinkWWW'+$count) | ConvertTo-Json -depth 3 -compress | out-file 'c:\alldata\getwc.json' -Encoding ascii -Append
-      Get-WebHeaders -uri ('http://www.'+$link.'Domain Name'+'/') -keytorec ('Link'+$count) | ConvertTo-Json -depth 3 -compress | out-file 'c:\alldata\getwc.json' -Encoding ascii -Append 
-      $count ++;
-  }
-  ## Continue 
-.EXAMPLE
-   
-   ## Import into MongoDB
-   C:\Program Files\MongoDB 2.6 Standard\bin>mongoimport -d test -c getwc c:\alldata\getwc.json
-   C:\Program Files\MongoDB 2.6 Standard\bin>mongo
-   > use test
-   > db.getwc.findOne()
-{
-        "_id" : ObjectId("54fc6ca54b026d61d1d20aac"),
-        "Error" : false,
-        "Uri" : "http://ABINGDON-VA.GOV/",
-        "KeyToRec" : "LinkWWW0",
-        "DateTimeUTC" : "2015-03-08T10:34:01.9483404-05:00",
-        "StatusCode" : 200,
-        "Headers" : {
-                "Vary" : "Accept-Encoding",
-                "Connection" : "close",
-                "Content-Length" : "27345",
-                "Content-Type" : "text/html",
-                "Date" : "Sun, 08 Mar 2015 15:30:12 GMT",
-                "ETag" : "\"840058-6ad1-5109eb428c040\"",
-                "Last-Modified" : "Fri, 06 Mar 2015 13:31:37 GMT",
-                "Server" : "Apache/2.2.14 (Ubuntu)"
-        }
-}
-.EXAMPLE
- ## Get headers
- PS C:\Windows\system32> (Get-WebHeaders -uri http://lboening.github.io/ -keytorec GH ).headers
- Key                                                         Value
- ---                                                         -----
- Access-Control-Allow-Origin                                 *
- Age                                                         0
- Connection                                                  close
- X-Served-By                                                 cache-ord1732-ORD
- X-Cache                                                     MISS
- X-Cache-Hits                                                0
- X-Timer                                                     S1425843444.469941,VS0,VE39
- Vary                                                        Accept-Encoding
- Accept-Ranges                                               bytes
- Content-Length                                              2006
- Cache-Control                                               max-age=600
- Content-Type                                                text/html; charset=utf-8
- Date                                                        Sun, 08 Mar 2015 19:37:24 GMT
- Expires                                                     Sun, 08 Mar 2015 19:47:24 GMT
- Last-Modified                                               Sun, 08 Mar 2015 19:34:15 GMT
- Server                                                      GitHub.com
- Via                                                         1.1 varnish
 .INPUTS
    [string] uri. Validated as HTTP.
    [string] keytorec (optional key added to output)
@@ -134,14 +68,6 @@ process{
    ## Install PSGet: (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1") | iex
    Install-module -ModuleURL http://lboening.github.io/LBHelpers.psm1 -force
    get-command -listimported | ? {$_.ModuleName -like 'LB*'}
-.ROLE
-   Test
-.LINKS
-   HTTP://lboening.github.io/LBHelpers.psm1
-   HTTP://lboening.github.io/LBHelpers.psd1
-   http://psget.net/
-.FUNCTIONALITY
-   Makes getting a head request easier
 #>
 Function Get-WebHeaders{
 [cmdletbinding()]
