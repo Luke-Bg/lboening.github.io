@@ -53,12 +53,22 @@ Catch [Exception]{
 }
 <#
 .Synopsis
-   Get-WebHeaders
+   Get-WebHeaders sends head request to URI and returns a Powershell custom object
 .DESCRIPTION
-   Gets header, returns object
+   Gets header, returns object with following properties
+     KeyToRec: Optional key, used for JSON
+     Uri: Uri that was called
+     Headers: The header response
+     StatusCode: Statuscode returned
+     DateTimeUTC: The datetime the command was run
+     You can use these commands for further processing
 .EXAMPLE
-   Get-Webheaders -uri 'http://boening.us'
+   Get-Webheaders -uri 'http://ABINGDON-VA.GOV/'
 .EXAMPLE
+   Get-WebHeaders -uri 'http://ABINGDON-VA.GOV/' -KeyToRec 'Abingdon-va' | FL
+.EXAMPLE
+  ## Longer example intended for piping JSON file output to MongoDB
+
   $getlinks = Get-Links | convertfrom-csv
 
    Write-Host "Count of returned rows: "$out.Length
@@ -74,9 +84,10 @@ Catch [Exception]{
       Get-WebHeaders -uri ('http://www.'+$link.'Domain Name'+'/') -keytorec ('Link'+$count) | ConvertTo-Json -depth 3 -compress | out-file 'c:\alldata\getwc.json' -Encoding ascii -Append 
       $count ++;
   }
+  ## Continue 
 .EXAMPLE
    
-   Import into MongoDB
+   ## Import into MongoDB
    C:\Program Files\MongoDB 2.6 Standard\bin>mongoimport -d test -c getwc c:\alldata\getwc.json
    C:\Program Files\MongoDB 2.6 Standard\bin>mongo
    > use test
@@ -101,14 +112,33 @@ Catch [Exception]{
 }
    
 .INPUTS
-   [string] uri 
+   [string] uri. Validated as HTTP.
    [string] keytorec (optional key added to output)
 .OUTPUTS
-   [psobject]
+   [psobject] with keys and values
 .NOTES
+   Installation: install-module -ModuleUrl http://lboening.github.io/LBHelpers.psm1 -Force
    See details as web site noted.
 .NOTES
+   ## Actions on creating file
    New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.0.3" -path "C:\Code\scripts\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1"  -PowerShellVersion 3.0 -Confirm
+   Test-ModuleManifext -Path c:\code\scripts\LBHelpers.psd1
+.NOTES
+   Pester testing
+   TBD
+.NOTES
+   ## Installation using PSGet
+   ## Install PSGet: (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1") | iex
+   Install-module http://lboening.github.io/LBHelpers.psm1 -force
+.ROLE
+   Test
+.LINKS
+   HTTP://lboening.github.io/LBHelpers.psm1
+   HTTP://lboening.github.io/LBHelpers.psd1
+   http://psget.net/
+   
+.FUNCTIONALITY
+   Makes getting a head request easier
 #>
 }
 
