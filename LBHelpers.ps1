@@ -66,7 +66,6 @@ process{
    Test-ModuleManifext -Path c:\code\scripts\LBHelpers.psd1
 .NOTES
    Pester testing
-   Invoke-Pester .\LbHelpers.Tests.ps1
    TBD
 .NOTES
    ## Installation using PSGet
