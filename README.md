@@ -11,6 +11,7 @@ Next steps
 
 Log
 ==================
+* Practiced whole shebang (2015-03-11)
 * Updated LBHelpers with better help (2015-03-10)
 * Added LBHelpers.psm1 file.  (2015-03-08)
 * Added files to be downloaded (2015-03-05)
