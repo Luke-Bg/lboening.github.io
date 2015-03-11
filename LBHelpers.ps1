@@ -44,34 +44,53 @@ process{
      StatusCode: Statuscode returned
      DateTimeUTC: The datetime the command was run
      You can use these commands for further processing
+	 Example output:
+		blah
 .EXAMPLE
    Get-Webheaders -uri 'http://ABINGDON-VA.GOV/'
 .EXAMPLE
    Get-WebHeaders -uri 'http://ABINGDON-VA.GOV/' -KeyToRec 'Abingdon-va' | FL
 .EXAMPLE
-   ## Examples
+   # Examples
    $links = Get-Links -url "https://gsa.github.io/data/dotgov-domains/2014-12-01-full.csv" | Convertfrom-csv
    $links.'Domain Name'[0..5] | % {'http://'+$_.'Domain Name'} | get-webheaders | convertto-json -depth 2 -compress | out-file c:\alldata\responses.json -encoding ascii
+.PARAMETER  Uri
+   Enter the URI to the resource
+.PARAMETER KeyToRec
+   Enter an optional key to the record
+   Type: string
+   Used for JSON output
+   Validation: none
 .INPUTS
-   [string] uri. Validated as HTTP.
-   [string] keytorec (optional key added to output)
+   [string] URI. Validated as HTTP.
+   [string] KeyToRec (optional key added to output)
 .OUTPUTS
    [psobject] with keys and values
+.LINK
+   http://lboening.github.io/LBHelpers.psm1
+   https://msdn.microsoft.com/en-us/library/hh847834.aspx   
 .NOTES
-   Installation: install-module -ModuleUrl http://lboening.github.io/LBHelpers.psm1 -Force
-   See details as web site noted.
-.NOTES
-   ## Actions on creating file
-   New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.0.3" -path "C:\Code\scripts\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1"  -PowerShellVersion 3.0 -Confirm
-   Test-ModuleManifext -Path c:\code\scripts\LBHelpers.psd1
-.NOTES
-   Pester testing
-   TBD
-.NOTES
-   ## Installation using PSGet
-   ## Install PSGet: (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1") | iex
-   Install-module -ModuleURL http://lboening.github.io/LBHelpers.psm1 -force
-   get-command -listimported | ? {$_.ModuleName -like 'LB*'}
+   # Lifecycle
+
+   
+   # Test
+   # Copy-item .\Lbhelpers.ps1 -destination .\Tests
+   # CD .\Tests
+   # Invoke-Pester
+
+   # New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.1.1" -path "C:\Code\scripts\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1"  -PowerShellVersion 3.0 -Confirm
+   # Test-ModuleManifext -Path c:\code\scripts\LBHelpers.psd1
+   
+   # Deploy
+   # copy-item .\LBHelpers.ps* ..\lboening.github.io\LBHelpers.ps*
+   # Git commit
+   # Git push
+
+   # Installation
+   # Install PSGet: (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1") | iex
+   # Install-module -ModuleURL http://lboening.github.io/LBHelpers.psm1 -force
+   # Import-Module LBHelpers
+   # get-command -listimported | ? {$_.ModuleName -like 'LB*'}
 #>
 Function Get-WebHeaders{
 [cmdletbinding()]
