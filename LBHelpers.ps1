@@ -1,7 +1,7 @@
 ﻿## Script Name: LBHelpers.ps1
 ## Purpose: Helper functions
 ## Record Content Author: luke_2
-## Revision: 0.1
+## Revision: 0.1.3
 ## Create date: 03/12/2015 19:40:51
 ## Last update: 03/12/2015 19:40:51
 
@@ -103,28 +103,31 @@ process{
    http://lboening.github.io/LBHelpers.psm1
    https://msdn.microsoft.com/en-us/library/hh847834.aspx   
 .NOTES
-   # Lifecycle
+ ---------
+ Lifecycle
+ ---------
    # CD .\Tests
    # Edit .\LBHelpers.ps1
+   # Edit .\LBHelpers.Tests.ps1
+   # Run tests
    # Invoke-Pester
-   # Copy-item .\LBHelpers.ps1 ..\.\lboening.github.io
+   # Copy-item .\LBHelpers.ps1 ..\..\lboening.github.io
 
-   # Create manifest
-   # New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.1.1" -path "C:\Code\scripts\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1"  -PowerShellVersion 3.0 -Confirm
+ Create manifest
+ -----------
+   # New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.1.3" -path "C:\Code\scripts\tests\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1"  -PowerShellVersion 3.0 -Confirm
    # Test-ModuleManifest -Path c:\code\scripts\LBHelpers.psd1
    
-   # Deploy
-   # copy-item .\LBHelpers.ps* ..\lboening.github.io
+ Deploy
+ ------
+   # copy-item .\LBHelpers.ps* ..\..\lboening.github.io
+   # Edit README.MD
+   # Edit INDEX.HTML
    # Git commit
    # Git push
 
-   # Edit web page and deploy
-   # Update README.MD
-   # Update INDEX.HTML
-   # Git commit
-   # Git push
-
-   # Installation
+ Installation
+ ------------
    # Install PSGet: (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1") | iex
    # Install-module -ModuleURL http://lboening.github.io/LBHelpers.psm1 -force
    # Import-Module LBHelpers
