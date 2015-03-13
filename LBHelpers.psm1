@@ -5,6 +5,18 @@
 ## Create date: 03/12/2015 19:40:51
 ## Last update: 03/12/2015 19:40:51
 
+Function New-CommentSnippet{
+$hv = @"
+## Script Name:
+## Purpose: 
+## Record Content Author: $($env:USERNAME)
+## Revision: 0.1
+## Create date: $(get-date)
+## Last update: $(get-date)
+"@
+new-IseSnippet -Title "Set Comment Header" -Description "Set comment header" -text "$hv" -CaretOffset 15 -Author "Luke Boening" -Force
+}
+
 Function Add-ConsoleApp{
 [cmdletbinding()]
 param(
@@ -25,7 +37,6 @@ public class MyProgram
 Add-Type -OutputType ConsoleApplication -OutputAssembly HelloWorld.exe $assembly
 }
 }
-
 
 
 Function Get-Links {
@@ -160,17 +171,3 @@ Process {
     }  
     }
 }
-
-## New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.2.0" -path "C:\USERS\LUKE_2\Documents\WindowsPowershell\Modules\LBHelpers\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1" -confirm
-
-# invoke-pester
-
-$hv = @"
-## Script Name:
-## Purpose: 
-## Record Content Author: $($env:USERNAME)
-## Revision: 0.1
-## Create date: $(get-date)
-## Last update: $(get-date)
-"@
-new-IseSnippet -Title "Set Comment Header" -Description "Set comment header" -text "$hv" -CaretOffset 15 -Author "Luke Boening" -Force
