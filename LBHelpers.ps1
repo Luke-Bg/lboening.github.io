@@ -1,22 +1,121 @@
-﻿## Script Name: LBHelpers.ps1
-## Purpose: Helper functions
-## Record Content Author: luke_2
-## Revision: 0.1.3
-## Create date: 03/12/2015 19:40:51
-## Last update: 03/12/2015 19:40:51
+﻿<#
+.SYNOPSIS
+  Get-Version
+.DESCRIPTION
+  Use to get version from this program. Version is hardcoded.
+.EXAMPLE
+  Get-Version
+.OUTPUTTYPE
+[STRING]
+ # 
+#>
+function Get-Version () {
+[cmdletbinding()]
+param()
+process{
+   return 0.1.9
+}
+}
 
+<#
+.SYNOPSIS
+Clears all log files
+.DESCRIPTION
+Run and clear all log files
+.EXAMPLE
+Clear-AllLogFiles
+ # 
+#>
+Function Clear-AllLogFiles {
+[cmdletbinding()]
+param()
+process {
+  try {
+    wevtutil el | foreach-object {wevtutil cl "$_"}
+    return $true
+  } 
+  Catch [Exception] 
+  {
+   $prop = @{'Module'=$MyInvocation.MyCommand.ModuleName; 'Error'= $true;  ErrorDetail=$_.Exception.Message; 'DateTimeUTC'= (Get-date -format O);}
+   New-Object -TypeName PsObject -property $prop
+  }
+}
+}
+
+
+<#
+.SYNOPSIS
+  Get-RestSharp uses PSGET to install
+.DESCRIPTION
+  Use to download RestSharp
+.EXAMPLE
+  Get-RestSharp
+ # 
+#>
+function Get-RestSharp {
+[cmdletbinding()]
+param()
+process{
+    install-module -NuGetPackageId RestSharp
+}
+}
+
+<#
+.SYNOPSIS
+  Test-RestSharp import RestSharp and connects to default site
+.DESCRIPTION
+  Use to test RestSharp
+.EXAMPLE
+  Test-RestSharp
+ # 
+#>
+function Test-RestSharp {
+[cmdletbinding()]
+param()
+process {
+   Import-Module RestSharp
+   Add-Type -AssemblyName RestSharp
+   $client = new-object RestSharp.RestClient
+   $client.BaseUrl = new-Object System.uri("http://data.consumerfinance.gov/api/views.json")
+   $request = new-Object RestSharp.RestRequest
+   $client.Execute($request)
+}
+}
+
+<#
+.SYNOPSIS
+  New-CommentSnippet
+.DESCRIPTION
+  Use to add new comment snippet
+.EXAMPLE
+  New-CommentSnippet
+ # 
+#>
 Function New-CommentSnippet{
+[cmdletbinding()]
+param()
+process{
 $hv = @"
-## Script Name:
-## Purpose: 
+## Script Name: $($MyInvocation.mycommand.modulename)
+## Purpose: Various Modules
 ## Record Content Author: $($env:USERNAME)
-## Revision: 0.1
+## Revision: $(Get-version)
 ## Create date: $(get-date)
 ## Last update: $(get-date)
 "@
 new-IseSnippet -Title "Set Comment Header" -Description "Set comment header" -text "$hv" -CaretOffset 15 -Author "Luke Boening" -Force
 }
+}
 
+<#
+.SYNOPSIS
+  Add-ConsoleApp
+.DESCRIPTION
+  Use to generate HELLOWORLD.EXE
+.EXAMPLE
+  Add-ConsoleApp
+ # 
+#>
 Function Add-ConsoleApp{
 [cmdletbinding()]
 param(
@@ -38,7 +137,19 @@ Add-Type -OutputType ConsoleApplication -OutputAssembly HelloWorld.exe $assembly
 }
 }
 
-
+<#
+.SYNOPSIS
+  Get-Links
+.DESCRIPTION
+  Use to Get-Links.
+.EXAMPLE
+  Get-Links
+.EXAMPLE
+  $resp = Get-Links -url "http://urlwith.csv.values.com/file.csv"
+.OUTPUTTYPE
+[PSCUSTOMOBJECT]
+ # 
+#>
 Function Get-Links {
 [cmdletbinding()]
 param(
@@ -46,7 +157,7 @@ param(
 [string]$url="https://gsa.github.io/data/dotgov-domains/2014-12-01-full.csv",
 [switch]$version
 )
-begin { if($version) { "Get-Links version {0}" -f ("0.1.1") } }
+begin { if($version) { "Get-Links version {0}" -f (Get-Build) } }
 process{
  $wc = New-object System.Net.Webclient
  $wc.DownloadString($url)
@@ -56,7 +167,7 @@ process{
 
 <#
 .Synopsis
-   Get-WebHeaders sends head request to URI and returns a Powershell custom object. Revision 0.1.3 2015-03-12
+   Get-WebHeaders sends head request to URI and returns a Powershell custom object.
 .DESCRIPTION
    Gets header, returns object with following properties
      KeyToRec: Optional key, used for JSON
@@ -155,19 +266,18 @@ param(
 [parameter(Mandatory=$false,ValueFromPipeLine=$true)]
 [string]$keytorec
 )
-begin { if ($version) { "Get-Webheaders version: {0}" -f ("0.1.4") } }
+begin { if ($version) { "Get-Webheaders version: {0}" -f (get-build) } }
 Process {
    try {
-    if (!($keytorec)) { $keytorec = (Get-random -SetSeed 1000 -maximum 1000000 -minimum 1) }
-    $resp = Invoke-WebRequest -uri $uri -method head -UseBasicParsing -DisableKeepAlive -TimeoutSec 4 -UserAgent "Powershell 4.0" -MaximumRedirection 2 
-    $prop = @{'KeyToRec'=$keytorec;'Uri'=$uri; 'Headers'=$resp.headers; 'StatusCode'=$resp.StatusCode; 'Error'=$false; 'DateTimeUTC'= (Get-date -format O);}
-    New-Object -TypeName PSObject -Property $prop
-    } Catch [System.Net.WebException]{
-      $prop = @{'KeyToRec'=$keytorec;'Error'= $true; 'Uri'=$uri; ErrorDetail=$_.Exception.Message; 'DateTimeUTC'= (Get-date -format O);}
-      New-Object -TypeName PsObject -property $prop
-    } Catch [Exception]{
-      $prop = @{'KeyToRec'=$keytorec;'Error'= $true; 'Uri'=$uri; ErrorDetail=$_.Exception.Message; 'DateTimeUTC'= (Get-date -format O);}
-      New-Object -TypeName PsObject -property $prop
+     if (!($keytorec)) { $keytorec = (Get-random -SetSeed 1000 -maximum 1000000 -minimum 1) }
+       $resp = Invoke-WebRequest -uri $uri -method head -UseBasicParsing -DisableKeepAlive -TimeoutSec 4 -UserAgent "Powershell 4.0" -MaximumRedirection 2 
+       $prop = @{'KeyToRec'=$keytorec;'Uri'=$uri; 'Headers'=$resp.headers; 'StatusCode'=$resp.StatusCode; 'Error'=$false; 'DateTimeUTC'= (Get-date -format O);}
+       New-Object -TypeName PSObject -Property $prop
+    } 
+   catch [Exception]
+    {
+       $prop = @{'KeyToRec'=$keytorec;'Error'= $true; 'Uri'=$uri; ErrorDetail=$_.Exception.Message; 'DateTimeUTC'= (Get-date -format O);}
+       New-Object -TypeName PsObject -property $prop
     }  
     }
 }
