@@ -13,7 +13,7 @@ function Get-Version () {
 [cmdletbinding()]
 param()
 process{
-   return 0.1.9
+   return "0.1.10"
 }
 }
 
@@ -280,4 +280,9 @@ Process {
        New-Object -TypeName PsObject -property $prop
     }  
     }
+}
+
+
+function get-stats {
+Get-WinEvent -FilterHashtable @{LogName="Application";STartTime=((get-date).AddDays(-1));} | group-object -property id, ProviderName -NoElement | sort-object -property count, id | select-object -property count, values | % {"{0,5} | {1,5}  | {2,-30}" -f ($_.count, $_.values[0], $_.Values[1])} 
 }

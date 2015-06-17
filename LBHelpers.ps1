@@ -13,7 +13,7 @@ function Get-Version () {
 [cmdletbinding()]
 param()
 process{
-   return 0.1.9
+   return "0.1.10"
 }
 }
 
@@ -228,21 +228,23 @@ process{
  ---------
  Lifecycle
  ---------
-   # CD .\Tests
+   # Set-location c:\code\scripts\Tests
    # Edit .\LBHelpers.ps1
    # Edit .\LBHelpers.Tests.ps1
-   # Run tests
-   # Invoke-Pester
-   # Copy-item .\LBHelpers.ps1 ..\..\lboening.github.io
+   # Run LbHelpers.Tests.Ps1 (just hit F5)
+   # PS C:\code\Scripts\tests> copy-item -path .\LBHelpers.ps1 -Destination .\LBHelpers.psm1
+   # Ps c:\code\Scripts\tests> Invoke-Pester
+   # Copy-item .\LBHelpers.ps* ..\..\lboening.github.io
 
  Create manifest
  -----------
-   # New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.1.3" -path "C:\Code\scripts\tests\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1"  -PowerShellVersion 3.0 -Confirm
-   # Test-ModuleManifest -Path c:\code\scripts\LBHelpers.psd1
-   
+   # New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.1.10" -path "C:\Code\scripts\tests\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1"  -PowerShellVersion 3.0 -Confirm
+   # Test-ModuleManifest -Path c:\code\scripts\Tests\LBHelpers.psd1
+   # PS C:\code\Scripts\tests> copy-item .\LBHelpers.ps* -Destination ..\..\lboening.github.io
+
  Deploy
  ------
-   # copy-item .\LBHelpers.ps* ..\..\lboening.github.io
+   # PS C:\code\Scripts\tests> copy-item .\LBHelpers.ps* -Destination ..\..\lboening.github.io
    # Edit README.MD
    # Edit INDEX.HTML
    # Git commit
@@ -280,4 +282,9 @@ Process {
        New-Object -TypeName PsObject -property $prop
     }  
     }
+}
+
+
+function get-stats {
+Get-WinEvent -FilterHashtable @{LogName="Application";StartTime=((get-date).AddDays(-1));} | group-object -property id, ProviderName -NoElement | sort-object -property count, id | select-object -property count, values | % {"{0,5} | {1,5}  | {2,-30}" -f ($_.count, $_.values[0], $_.Values[1])} 
 }
