@@ -1,6 +1,5 @@
 lboening.github.io
 ==================
-
 Github IO site
 
 Next steps
@@ -8,9 +7,9 @@ Next steps
 * Work on LBHelpers
 * Incrementally add features as time permits
 
-
 Log
 ==================
+* Added get-stats function (2015-04-06)
 * Updated functions (2015-04-06)
 * Updates again (2015-03-12)
 * Practiced whole shebang (2015-03-11)
