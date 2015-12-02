@@ -13,7 +13,7 @@ function Get-Version () {
 [cmdletbinding()]
 param()
 process{
-   return "0.1.10"
+   return '0.1.10'
 }
 }
 
@@ -31,7 +31,7 @@ Function Clear-AllLogFiles {
 param()
 process {
   try {
-    wevtutil el | foreach-object {wevtutil cl "$_"}
+    wevtutil.exe el | foreach-object {wevtutil.exe cl "$_"}
     return $true
   } 
   Catch [Exception] 
@@ -41,7 +41,6 @@ process {
   }
 }
 }
-
 
 <#
 .SYNOPSIS
@@ -76,7 +75,7 @@ process {
    Import-Module RestSharp
    Add-Type -AssemblyName RestSharp
    $client = new-object RestSharp.RestClient
-   $client.BaseUrl = new-Object System.uri("http://data.consumerfinance.gov/api/views.json")
+   $client.BaseUrl = new-Object System.uri('http://data.consumerfinance.gov/api/views.json')
    $request = new-Object RestSharp.RestRequest
    $client.Execute($request)
 }
@@ -103,7 +102,7 @@ $hv = @"
 ## Create date: $(get-date)
 ## Last update: $(get-date)
 "@
-new-IseSnippet -Title "Set Comment Header" -Description "Set comment header" -text "$hv" -CaretOffset 15 -Author "Luke Boening" -Force
+New-IseSnippet -Title 'Set Comment Header' -Description 'Set comment header' -text '$hv' -CaretOffset 15 -Author 'Luke Boening' -Force
 }
 }
 
@@ -154,16 +153,15 @@ Function Get-Links {
 [cmdletbinding()]
 param(
 [Parameter(Mandatory=$false,ValueFromPipeLine=$true, ValueFromPipelineByPropertyName=$true,Position=0)]
-[string]$url="https://gsa.github.io/data/dotgov-domains/2014-12-01-full.csv",
+[string]$url='https://gsa.github.io/data/dotgov-domains/2014-12-01-full.csv',
 [switch]$version
 )
-begin { if($version) { "Get-Links version {0}" -f (Get-Build) } }
+begin { if($version) { 'Get-Links version {0}' -f (Get-Build) } }
 process{
  $wc = New-object System.Net.Webclient
  $wc.DownloadString($url)
 }
 }
-
 
 <#
 .Synopsis
@@ -190,7 +188,7 @@ process{
    Get-WebHeaders -uri 'http://ABINGDON-VA.GOV/' -KeyToRec 'Abingdon-va' | FL
 .EXAMPLE
    # Examples
-   $links = Get-Links -url "https://gsa.github.io/data/dotgov-domains/2014-12-01-full.csv" | Convertfrom-csv
+   $links = Get-Links -url 'https://gsa.github.io/data/dotgov-domains/2014-12-01-full.csv' | Convertfrom-csv
    $links.'Domain Name'[0..5] | % {'http://'+$_.'Domain Name'} | get-webheaders | convertto-json -depth 2 -compress | out-file c:\alldata\responses.json -encoding ascii
 .EXAMPLE
    # Output 
@@ -237,7 +235,7 @@ process{
 
  Create manifest
  -----------
-   # New-ModuleManifest -NestedModules ".\Lbhelpers.psm1" -Author "Luke Boening" -CompanyName "Luke Boening" -Copyright "None" -Description "Testing module creation" -ModuleVersion "0.1.3" -path "C:\Code\scripts\tests\LBHelpers.psd1" -RootModule ".\LbHelpers.psm1"  -PowerShellVersion 3.0 -Confirm
+   # New-ModuleManifest -NestedModules '.\Lbhelpers.psm1' -Author 'Luke Boening' -CompanyName 'Luke Boening' -Copyright 'None' -Description 'Testing module creation' -ModuleVersion '0.1.3' -path 'C:\Code\scripts\tests\LBHelpers.psd1' -RootModule '.\LbHelpers.psm1'  -PowerShellVersion 3.0 -Confirm
    # Test-ModuleManifest -Path c:\code\scripts\LBHelpers.psd1
    
  Deploy
@@ -250,7 +248,7 @@ process{
 
  Installation
  ------------
-   # Install PSGet: (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1") | iex
+   # Install PSGet: (new-object Net.WebClient).DownloadString('http://psget.net/GetPsGet.ps1') | iex
    # Install-module -ModuleURL http://lboening.github.io/LBHelpers.psm1 -force
    # Import-Module LBHelpers
    # get-command -listimported | ? {$_.ModuleName -like 'LB*'}
@@ -262,15 +260,15 @@ param(
 [switch]$version,
 [parameter(Mandatory=$false,ValueFromPipeLine=$true)]
 [ValidatePattern('http*')]
-[string]$uri="http://ABINGDON-VA.GOV/",
+[string]$uri='http://ABINGDON-VA.GOV/',
 [parameter(Mandatory=$false,ValueFromPipeLine=$true)]
 [string]$keytorec
 )
-begin { if ($version) { "Get-Webheaders version: {0}" -f (get-build) } }
+begin { if ($version) { 'Get-Webheaders version: {0}' -f (get-build) } }
 Process {
    try {
      if (!($keytorec)) { $keytorec = (Get-random -SetSeed 1000 -maximum 1000000 -minimum 1) }
-       $resp = Invoke-WebRequest -uri $uri -method head -UseBasicParsing -DisableKeepAlive -TimeoutSec 4 -UserAgent "Powershell 4.0" -MaximumRedirection 2 
+       $resp = Invoke-WebRequest -uri $uri -method head -UseBasicParsing -DisableKeepAlive -TimeoutSec 4 -UserAgent 'Powershell 4.0' -MaximumRedirection 2 
        $prop = @{'KeyToRec'=$keytorec;'Uri'=$uri; 'Headers'=$resp.headers; 'StatusCode'=$resp.StatusCode; 'Error'=$false; 'DateTimeUTC'= (Get-date -format O);}
        New-Object -TypeName PSObject -Property $prop
     } 
@@ -282,7 +280,6 @@ Process {
     }
 }
 
-
-function get-stats {
-Get-WinEvent -FilterHashtable @{LogName="Application";STartTime=((get-date).AddDays(-1));} | group-object -property id, ProviderName -NoElement | sort-object -property count, id | select-object -property count, values | % {"{0,5} | {1,5}  | {2,-30}" -f ($_.count, $_.values[0], $_.Values[1])} 
+function Get-Stats {
+Get-WinEvent -FilterHashtable @{LogName='Application';STartTime=((get-date).AddDays(-1));} | group-object -property id, ProviderName -NoElement | sort-object -property count, id | select-object -property count, values | % {'{0,5} | {1,5}  | {2,-30}' -f ($_.count, $_.values[0], $_.Values[1])} 
 }
