@@ -25,5 +25,16 @@ Describe "LBHelper" {
         (Get-WebHeaders -uri 'http://lboening1.github.io').ErrorDetail | should be "The remote server returned an error: (404) Not Found."
     }
     }
+    Context "The desired functions appear in module" {
 
+    $functions = @('Get-Version','Clear-AllLogFiles','Get-RestSharp','Test-RestSharp','New-CommentSnippet','Add-ConsoleApp','Get-Links', 'Get-WebHeaders', 'Get-Stats')
+
+    Foreach ($func in $functions| sort) {
+        it "Function exists $($func)" {
+         
+            (Test-path function:\$func) | should be true
+
+        }
+    }
+    }
 }
