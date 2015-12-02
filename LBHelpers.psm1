@@ -13,7 +13,7 @@ function Get-Version () {
 [cmdletbinding()]
 param()
 process{
-   return '0.1.10'
+   return '0.1.11'
 }
 }
 
@@ -250,6 +250,7 @@ process{
  ------------
    # Install PSGet: (new-object Net.WebClient).DownloadString('http://psget.net/GetPsGet.ps1') | iex
    # Install-module -ModuleURL http://lboening.github.io/LBHelpers.psm1 -force
+   # Install-module -ModuleURL http://lboening.github.io/LBHelpers.psm1 -update
    # Import-Module LBHelpers
    # get-command -listimported | ? {$_.ModuleName -like 'LB*'}
 #>
