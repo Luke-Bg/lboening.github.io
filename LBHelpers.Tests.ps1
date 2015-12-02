@@ -2,8 +2,22 @@
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
 . "$here\$sut"
 
-Describe "LBHelper" {
-    Context "Testing help" {
+Describe "LBHelper functions" {
+    
+    Context "The module or script contains desired functions" {
+
+    $functions = @('Get-Version','Clear-AllLogFiles','Get-ServiceHash','Test-RestSharp','New-CommentSnippet','Add-ConsoleApp','Get-Links', 'Get-WebHeaders', 'Get-Stats')
+
+    Foreach ($func in $functions| sort) {
+        it "Function exists $($func)" {
+         
+            (Test-path function:\$func) | should be true
+
+        }
+    }
+    }
+   
+    Context "Testing help in Get-WebHeaders function" {
     It "Get-help opens successfully" {
         (Get-Help Get-WebHeaders) | Should Be $true
     }
@@ -18,23 +32,39 @@ Describe "LBHelper" {
     }
 
     Context "Opens valid URL" {
-    it "Opens uri" {
+    it "Opens valid uri http://lboening.github.io and Get-WebHeaders gets the headers" {
         (Get-WebHeaders -uri 'http://lboening.github.io') | should be $true
         }
-    it "Opens invalid url http://lboening1.github.io returns 404 error" {
+    it "Opens invalid uri http://lboening1.github.io which returns 404 error" {
         (Get-WebHeaders -uri 'http://lboening1.github.io').ErrorDetail | should be "The remote server returned an error: (404) Not Found."
     }
     }
-    Context "The desired functions appear in module" {
+    
+    Context "Testing help in Get-ServiceHash function" {
 
-    $functions = @('Get-Version','Clear-AllLogFiles','Get-RestSharp','Test-RestSharp','New-CommentSnippet','Add-ConsoleApp','Get-Links', 'Get-WebHeaders', 'Get-Stats')
+    
+    It "Get-help with full opens" {
+        (Get-Help Get-ServiceHash -full).examples | Should be $true
+    }
 
-    Foreach ($func in $functions| sort) {
-        it "Function exists $($func)" {
-         
-            (Test-path function:\$func) | should be true
 
-        }
+    }
+
+    Context "Testing return object is hashtable in Get-ServiceHash function" {
+        
+        Mock Get-ServiceHash { return @{ComputerName='Luke';} }
+    
+    It "Get-ServiceHash returns hash table" {
+        (get-servicehash | % { $_.GetType().FullName}) | Should be "System.Collections.Hashtable"
+    }
+
+    It "Assert verifiable mocks for Get-ServiceHash" {
+        Assert-VerifiableMocks
+    }
+
+
+    It "Assert mockCalled once for Get-ServiceHash" {
+        Assert-MockCalled Get-ServiceHash -Times 1
     }
     }
 }
