@@ -2,7 +2,7 @@
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
 . "$here\$sut"
 
-Describe "LBHelper functions" {
+Describe "List LBHelper functions" {
     
     Context "The module or script contains desired functions" {
 
