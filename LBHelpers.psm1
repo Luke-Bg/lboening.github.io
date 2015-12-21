@@ -13,7 +13,7 @@ function Get-Version () {
 [cmdletbinding()]
 param()
 process{
-   return '0.1.11'
+   return '1.1.11'
 }
 }
 
