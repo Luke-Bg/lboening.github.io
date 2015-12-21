@@ -323,3 +323,6 @@ Service=$services;
 $result;
 }
 }
+
+Export-ModuleMember Get-ServiceHash
+Export-ModuleMember Get-Stats
