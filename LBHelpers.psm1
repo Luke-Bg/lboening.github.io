@@ -284,3 +284,42 @@ Process {
 function Get-Stats {
 Get-WinEvent -FilterHashtable @{LogName='Application';STartTime=((get-date).AddDays(-1));} | group-object -property id, ProviderName -NoElement | sort-object -property count, id | select-object -property count, values | % {'{0,5} | {1,5}  | {2,-30}' -f ($_.count, $_.values[0], $_.Values[1])} 
 }
+
+<#
+.Synopsis
+   Create hash table from running services
+.DESCRIPTION
+   Run this module to get a hash listing of current services running on same computer
+.EXAMPLE
+   $out = Get-ServiceHash
+.EXAMPLE
+   Get-ServiceHash | ConvertTo-Json
+.INPUTS
+   Inputs to this cmdlet (if any)
+.OUTPUTS
+   [system.collections.hashtable]
+   * Hash table listing the current services
+   * Name of computer
+   * Name of user
+   * Current date and time in ISO format
+   * Name of current Powershell Invocation name
+.NOTES
+   General notes
+#>
+Function Get-ServiceHash {
+[cmdletbinding()]
+[OutputType([System.Collections.Hashtable])]
+param()
+begin{}
+process{
+$services = get-service | Select-object -property @{N='Name';e={$_.Name}}, @{N='Status';e={$_.Status}}, @{N='DisplayName';e={$_.DisplayName}} 
+$result = @{
+ComputerName=($env:COMPUTERNAME);
+CurrentDateTime=((get-date -format 'u'));
+Username=($env:USERname);
+Program=($MyInvocation.MyCommand.Name);
+Service=$services;
+};
+$result;
+}
+}
